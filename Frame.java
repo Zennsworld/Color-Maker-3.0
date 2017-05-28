@@ -56,7 +56,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	public final static int COLOR = 3;
 	
 	java.awt.Dimension dim = Toolkit.getDefaultToolkit().getScreenSize(); 
-	int sx, sy, swidth, sheight;
+	int sx, sy, swidth, sheight, cwidth, cheight;
 	
     private int screenIdx = 0;
     public GLWindow glWindow;
@@ -66,21 +66,17 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	private int textureShaderID;
 	
 	public final static int DYNTEXTURESIZE = 1024;
-	public final static float COLORUPDATEAMOUNT = 256f/(float)DYNTEXTURESIZE;
 	
 	private int dyntextureIDs[] = new int [6];
 	private int dynfboIDs[] = new int [6];
 	
-	public final static int SBwithH1 = 0;
-	public final static int SBwithH2 = 1;
-	public final static int HBwithS1 = 2;
-	public final static int HBwithS2 = 3;
-	public final static int SHwithB1 = 4;
-	public final static int SHwithB2 = 5;
+	public final static int SBwithH = 0;
+	public final static int HBwithS = 1;
+	public final static int SHwithB = 2;
+	public final static int AlphaIDHB = 3;
+	public final static int AlphaIDSH = 4;
 	
-	private int [] uniformIDs = new int [6];
-	
-	private int hue1ID;
+	private int [] uniformIDs = new int [5];
 
     public Frame () {
     	Display display = NewtFactory.createDisplay(null);
@@ -101,66 +97,41 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		glWindow.addGLEventListener(this);
 
 		animator = new FPSAnimator(glWindow, 120);
-		animator.start();   
+		animator.start();		
     }
+    
+    private float [] textureRenderSquare = new float [] {
+    	(float) -1, (float) -1,
+    	(float) +1, (float) -1,
+    	(float) -1, (float) +1,
+    	(float) +1, (float) +1,
+    	(float) -1, (float) +1,
+    	(float) +1, (float) -1};
 
-    private float[][] vertexData = new float[][] {
-    	{(float) -1, (float) -1, (float) +1, (float) 1, (float) 1,
-    	(float) +1, (float) -1, (float) +1, (float) 0, (float) 1,
-    	(float) -1, (float) +1, (float) +1, (float) 1, (float) 0, 
-    	(float) +1, (float) +1, (float) +1, (float) 0, (float) 0,
-    	(float) -1, (float) +1, (float) +1, (float) 1, (float) 0,
-    	(float) +1, (float) -1, (float) +1, (float) 0, (float) 1},
-    	
-		{(float) -1, (float) -1, (float) +1, (float) 1, (float) 1,
-		(float) +1, (float) -1, (float) +1, (float) 0, (float) 1,
-		(float) -1, (float) +1, (float) +1, (float) 1, (float) 0, 
-		(float) +1, (float) +1, (float) +1, (float) 0, (float) 0,
-		(float) -1, (float) +1, (float) +1, (float) 1, (float) 0,
-		(float) +1, (float) -1, (float) +1, (float) 0, (float) 1,
-		
-		(float) -1, (float) +1, (float) -1, (float) 1, (float) 1,
-		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1,
-		(float) -1, (float) +1, (float) +1, (float) 1, (float) 0, 
-		(float) +1, (float) +1, (float) +1, (float) 0, (float) 0,
-		(float) -1, (float) +1, (float) +1, (float) 1, (float) 0,
-		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1,
-		
-		(float) -1, (float) -1, (float) -1, (float) 1, (float) 1,
-		(float) +1, (float) -1, (float) -1, (float) 0, (float) 1,
-		(float) -1, (float) -1, (float) +1, (float) 1, (float) 0, 
-		(float) +1, (float) -1, (float) +1, (float) 0, (float) 0,
-		(float) -1, (float) -1, (float) +1, (float) 1, (float) 0,
-		(float) +1, (float) -1, (float) -1, (float) 0, (float) 1,
-		
-		(float) +1, (float) -1, (float) -1, (float) 1, (float) 1,
-		(float) +1, (float) -1, (float) +1, (float) 0, (float) 1,
-		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0, 
-		(float) +1, (float) +1, (float) +1, (float) 0, (float) 0,
-		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0,
-		(float) +1, (float) -1, (float) +1, (float) 0, (float) 1,
-		
-		(float) -1, (float) -1, (float) -1, (float) 1, (float) 1,
-		(float) -1, (float) -1, (float) +1, (float) 0, (float) 1,
-		(float) -1, (float) +1, (float) -1, (float) 1, (float) 0, 
-		(float) -1, (float) +1, (float) +1, (float) 0, (float) 0,
-		(float) -1, (float) +1, (float) -1, (float) 1, (float) 0,
-		(float) -1, (float) -1, (float) +1, (float) 0, (float) 1,
-		
-		(float) -1, (float) -1, (float) -1, (float) 1, (float) 1,
-		(float) +1, (float) -1, (float) -1, (float) 0, (float) 1,
-		(float) -1, (float) +1, (float) -1, (float) 1, (float) 0, 
-		(float) +1, (float) +1, (float) -1, (float) 0, (float) 0,
-		(float) -1, (float) +1, (float) -1, (float) 1, (float) 0,
-		(float) +1, (float) -1, (float) -1, (float) 0, (float) 1},
+    private float[][] vertexData = new float[][] {    	
+		{(float) -1, (float) -1, (float) +1, (float) 0, (float) 0,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1, 
+		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0},		
 		};
 		
-	private int [] drawTypes = {GL4.GL_TRIANGLES, GL4.GL_TRIANGLES};
+	private int [] drawTypes = {GL4.GL_TRIANGLES};
     
+	private short[] indexDataTextureRender = new short[textureRenderSquare.length/2];
+	private int [] VAOTR = new int [1];
+	private int [] VBOTR = new int [1];
+	private int [] IBOTR = new int [1];
+	Model square;
+	
     private short[][] indexData = new short[vertexData.length][];
     private int[][] objects = new int[3][vertexData.length];
     
     {
+    	for (int i=0;i<indexDataTextureRender.length;i++){
+    		indexDataTextureRender[i] = (short) i;
+    	}
 		for (int i = 0; i < vertexData.length; i++) {
 			indexData[i] = new short [vertexData[i].length/5];
 			for (int j = 0; j < indexData[i].length; j++) {
@@ -169,29 +140,22 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		}
 	}
     
-    private int modelMatrixID, projMatrixID;
-    private int programScreen, programTexture;
+    private int modelMatrixID, projMatrixID, alphaID;
+    private int programScreen, programTextureSBWH, programTextureHBWS, programTextureSHWB;
     private final String SHADERS_ROOT = "/shaders";
     
     private float modelAlignmentX = -1;
 	private float modelAlignmentY = -1;
     
-    private float[] identity = {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
-    //private float[] rotationX = {1,0,0,0,0,(float) Math.cos(theataX),(float) Math.sin(theataX),0,0,(float) -Math.sin(theataX),(float) Math.cos(theataX),0,0,0,0,1};
-    //private float[] rotationY = {(float) Math.cos(theataY),0,(float) -Math.sin(theataY),0,0,1,0,0,(float)Math.sin(theataY),0,(float) Math.cos(theataY),0,0,0,0,1};
-    private float[] rotationX = identity;
-    private float[] rotationY = identity;
-   // private float[] rotationZ = identity;
-    private float[] translation = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-    private float[] finalM = FloatUtil.multMatrix(rotationX,rotationY);
- //   private float[] finalM = translation;
+	Camara cam = new Camara (0,0,0,0,0,0);
+	private float[] finalM = new float[16];
     private float[] modelToClip = new float[16];
     private float[] projMatrix = new float[16];
     private float[] Ftranslations = new float[16];
 
     long nanoNow, nanoBefore;
     
-    Component [] coms = new Component [2];
+    Component [] coms;
     
     @Override
 	public void init(GLAutoDrawable drawable) {
@@ -209,6 +173,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			ModelManager.addModel(new Model (objects[VAO][i], objects[VBO][i], objects[IBO][i], indexData[i].length, drawTypes[i]), modelAlignmentX-vertexData[i][0], modelAlignmentY-vertexData[i][1]);
 		}
 		
+		square = new Model (VAOTR[0], VBOTR[0], IBOTR[0], indexDataTextureRender.length, GL4.GL_TRIANGLES);
+		
 		initTextures(gl4, "images");
 		
 		int [] temp = dynamicTextureInit(gl4);
@@ -217,8 +183,6 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			dyntextureIDs[i] = temp[i*2];
 			dynfboIDs[i] = temp[i*2+1];
 		}
-		
-		square = ModelManager.getModel(ModelManager.ONEXONESQUARE);
 				
 		initProgram(gl4);
 		
@@ -234,6 +198,12 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 
 	private void initVbo(GL4 gl4) {
+		gl4.glGenBuffers(1, VBOTR, 0);
+		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, VBOTR[0]);
+		int sizeTR = textureRenderSquare.length  * GLBuffers.SIZEOF_FLOAT;
+		FloatBuffer vertexBufferTR = GLBuffers.newDirectFloatBuffer(textureRenderSquare);
+		gl4.glBufferData(GL4.GL_ARRAY_BUFFER, sizeTR, vertexBufferTR, GL4.GL_STATIC_DRAW);
+		
 		gl4.glGenBuffers(vertexData.length, objects[VBO], 0);
 		{
 			for (int i = 0; i < vertexData.length; i++) {
@@ -249,13 +219,18 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 
 	private void initIbo(GL4 gl4) {
-
+		gl4.glGenBuffers(1, IBOTR, 0);
+		gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
+		int sizeTR = indexDataTextureRender.length * GLBuffers.SIZEOF_SHORT;
+		ShortBuffer indexBufferTR = GLBuffers.newDirectShortBuffer(indexDataTextureRender);
+		gl4.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, sizeTR, indexBufferTR, GL4.GL_STATIC_DRAW);
+		
 		gl4.glGenBuffers(indexData.length, objects[IBO], 0);
 		{
 			for (int i = 0; i < indexData.length; i++) {
 				gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, objects[IBO][i]);
-				ShortBuffer indexBuffer = GLBuffers.newDirectShortBuffer(indexData[i]);
 				int size = indexData[i].length * GLBuffers.SIZEOF_SHORT;
+				ShortBuffer indexBuffer = GLBuffers.newDirectShortBuffer(indexData[i]);
 				gl4.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, size, indexBuffer, GL4.GL_STATIC_DRAW);
 			}
 		}
@@ -265,6 +240,22 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 
 	private void initVao(GL4 gl4) {
+		
+		gl4.glGenVertexArrays(1, VAOTR, 0);
+		gl4.glBindVertexArray(VAOTR[0]);
+		{
+			gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
+			{
+				gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, VBOTR[0]);
+				{
+					int stride = (2) * GLBuffers.SIZEOF_FLOAT;
+					gl4.glEnableVertexAttribArray(POSITION);
+					gl4.glVertexAttribPointer(POSITION, 2, GL4.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
+				}
+				gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
+			}
+		}
+		
 		gl4.glGenVertexArrays(vertexData.length, objects[VAO], 0);
 		for (int i = 0; i < vertexData.length; i++) {
 			gl4.glBindVertexArray(objects[VAO][i]);
@@ -297,35 +288,64 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         		SHADERS_ROOT, (new String[]{"vs_textures"}), "", null, true);
         ShaderCode fragShaderSBWH1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
         		SHADERS_ROOT, (new String[]{"fs_texture_SBWH1"}), "", null, true);
+        ShaderCode fragShaderHBWS1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        		SHADERS_ROOT, (new String[]{"fs_texture_HBWS1"}), "", null, true);
+        ShaderCode fragShaderSHWB1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        		SHADERS_ROOT, (new String[]{"fs_texture_SHWB1"}), "", null, true);
 
         ShaderProgram shaderProgram = new ShaderProgram();
         shaderProgram.add(vertShader);
         shaderProgram.add(fragShader);
-        ShaderProgram shaderProgramTexture = new ShaderProgram();
-        shaderProgramTexture.add(vertShaderTexture);
-        shaderProgramTexture.add(fragShaderSBWH1);
+        
+        ShaderProgram ShaderprogramTextureSBWH = new ShaderProgram();
+        ShaderprogramTextureSBWH.add(vertShaderTexture);
+        ShaderprogramTextureSBWH.add(fragShaderSBWH1);
+        
+        ShaderProgram shaderProgramTextureHBWS = new ShaderProgram();
+        shaderProgramTextureHBWS.add(vertShaderTexture);
+        shaderProgramTextureHBWS.add(fragShaderHBWS1);
+        
+        ShaderProgram shaderProgramTextureSHWB = new ShaderProgram();
+        shaderProgramTextureSHWB.add(vertShaderTexture);
+        shaderProgramTextureSHWB.add(fragShaderSHWB1);
 
         shaderProgram.init(gl4);
-        shaderProgramTexture.init(gl4);
+        ShaderprogramTextureSBWH.init(gl4);
+        shaderProgramTextureHBWS.init(gl4);
+        shaderProgramTextureSHWB.init(gl4);
 
         programScreen = shaderProgram.program();
-        programTexture = shaderProgramTexture.program();
+        programTextureSBWH = ShaderprogramTextureSBWH.program();
+        programTextureHBWS = shaderProgramTextureHBWS.program();
+        programTextureSHWB = shaderProgramTextureSHWB.program();
         
-        gl4.glBindAttribLocation(programScreen, Semantic.Attr.POSITION, "positionV");
-        gl4.glBindFragDataLocation(programScreen, Semantic.Frag.COLOR, "positionF");
-        gl4.glBindFragDataLocation(programScreen, Semantic.Frag.COLOR, "outputColorF");
+        gl4.glBindAttribLocation(programTextureSBWH, 0, "positionV");
+        gl4.glBindFragDataLocation(programTextureSBWH, 0, "outputColorF");
+        gl4.glBindFragDataLocation(programTextureSBWH, 0, "positionF");
+        
+        gl4.glBindAttribLocation(programTextureHBWS, 0, "positionV");
+        gl4.glBindFragDataLocation(programTextureHBWS, 0, "outputColorF");
+        gl4.glBindFragDataLocation(programTextureHBWS, 0, "positionF");
+        
+        gl4.glBindAttribLocation(programTextureSHWB, 0, "positionV");
+        gl4.glBindFragDataLocation(programTextureSHWB, 0, "outputColorF");
+        gl4.glBindFragDataLocation(programTextureSHWB, 0, "positionF");
 
-        gl4.glBindAttribLocation(programScreen, Semantic.Attr.POSITION, "position");
-        gl4.glBindAttribLocation(programScreen, Semantic.Attr.COLOR, "vertexUV");
-        gl4.glBindFragDataLocation(programScreen, Semantic.Frag.COLOR, "outputColor");
-        gl4.glBindFragDataLocation(programScreen, Semantic.Frag.COLOR, "fragmentUV");
+        gl4.glBindAttribLocation(programScreen, 0, "position");
+        gl4.glBindAttribLocation(programScreen, 3, "vertexUV");
+        gl4.glBindFragDataLocation(programScreen, 0, "outputColor");
+        gl4.glBindFragDataLocation(programScreen, 0, "fragmentUV");
         
         shaderProgram.link(gl4, System.out);
-        shaderProgramTexture.link(gl4, System.out);
+        ShaderprogramTextureSBWH.link(gl4, System.out);
+        shaderProgramTextureHBWS.link(gl4, System.out);
+        shaderProgramTextureSHWB.link(gl4, System.out);
         
-        hue1ID = gl4.glGetUniformLocation(programTexture, "hue1");
-        
-        uniformIDs[SBwithH1] = hue1ID;
+        uniformIDs[SBwithH] = gl4.glGetUniformLocation(programTextureSBWH, "hueRGB");
+        uniformIDs[HBwithS] = gl4.glGetUniformLocation(programTextureHBWS, "sat");
+        uniformIDs[SHwithB] = gl4.glGetUniformLocation(programTextureSHWB, "bri");
+        uniformIDs[AlphaIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "alpha");
+        uniformIDs[AlphaIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "alpha");
         
         projMatrixID = gl4.glGetUniformLocation(programScreen, "projMatrix");
         modelMatrixID = gl4.glGetUniformLocation(programScreen, "modelMatrix");
@@ -340,7 +360,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 		GL4 gl4 = drawable.getGL().getGL4();
 		
-		gl4.glDeleteProgram(programTexture);
+		gl4.glDeleteProgram(programTextureSBWH);
+		gl4.glDeleteProgram(programTextureHBWS);
 		gl4.glDeleteProgram(programScreen);
 		gl4.glDeleteVertexArrays(vertexData.length, objects[0], 0);
 
@@ -348,41 +369,96 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 		gl4.glDeleteBuffers(vertexData.length, objects[2], 0);
 		
-		gl4.glDeleteTextures(textureIDs.length, textureIDs, 0);
+		if (textureIDs.length>0){
+			gl4.glDeleteTextures(textureIDs.length, textureIDs, 0);
+		}
+		gl4.glDeleteFramebuffers(dynfboIDs.length, dynfboIDs, 0);
+		gl4.glDeleteTextures(dyntextureIDs.length, dyntextureIDs, 0);
 		
 		System.exit(0);
 	}
  
 	double angleSpeed = 360d/100000d;
-	double currentns = 0;
+	double color = 0;
 	
-	Model square;
+	double amountToMove = 0;
+	double moveSpeed = 1d/1000000000d;
 
 	public void display(GLAutoDrawable drawable) {
-		
 		nanoNow = System.nanoTime();
-		currentns = currentns + (nanoNow-nanoBefore)*angleSpeed/10000000d;
+	//	coms[0].rotateX((nanoNow-nanoBefore)*angleSpeed/10000000d);
+	//	coms[1].rotateY((nanoNow-nanoBefore)*angleSpeed/10000000d);
+	//	coms[1].updateFinalRotation();
+	//	color = color + (nanoNow-nanoBefore)/10000000;
+		cam.moveTranslation(0, 0, (float) ((nanoNow-nanoBefore)*moveSpeed*amountToMove));
+		amountToMove -= (nanoNow-nanoBefore)*moveSpeed*amountToMove;
 		nanoBefore = nanoNow;
 		
-		float [] rotationXT = {1,0,0,0,0,(float) Math.cos(currentns),(float) Math.sin(currentns),0,0,(float) -Math.sin(currentns),(float) Math.cos(currentns),0,0,0,0,1};
-	    float [] rotationYT = {(float) Math.cos(currentns),0,(float) -Math.sin(currentns),0,0,1,0,0,(float)Math.sin(currentns),0,(float) Math.cos(currentns),0,0,0,0,1};
 	    
 		GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClearColor(0f, 0f, 0f, 1f);
 		gl4.glClearDepthf(1f);
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		
-		gl4.glUseProgram(programTexture);
-
-		gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[0]);
-		gl4.glViewport(0,0,1024,1024);
-		
-		gl4.glBindVertexArray(square.getVAO());
+		gl4.glViewport(0, 0, DYNTEXTURESIZE, DYNTEXTURESIZE);
+		gl4.glUseProgram(programTextureSBWH);
 		{
-			gl4.glUniform1f(hue1ID, 0);
-			gl4.glDrawElements(GL4.GL_TRIANGLES, square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[0]);
+
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color / 60f),1), 0);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+			
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[1]);
+			
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color / 60f),1), 0);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+
 		}
-		
+		gl4.glUseProgram(programTextureHBWS);
+		{
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[2]);
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform1f(uniformIDs[HBwithS], 1);
+				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+			
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[3]);
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform1f(uniformIDs[HBwithS], 0);
+				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+
+		}
+		gl4.glUseProgram(programTextureSHWB);
+		{
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[4]);
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform1f(uniformIDs[SHwithB], 1);
+				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+			
+			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[5]);
+			gl4.glBindVertexArray(square.getVAO());
+			{
+				gl4.glUniform1f(uniformIDs[SHwithB], 0);
+				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1);
+				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+			}
+			
+		}
 		gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
 		 
 		gl4.glUseProgram(programScreen);
@@ -395,9 +471,9 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 					gl4.glBindTexture(GL.GL_TEXTURE_2D,coms[i].textureID);
 					gl4.glUniform1i(textureShaderID, 0);
 					
-					finalM = FloatUtil.multMatrix(rotationXT,rotationYT,finalM);
-					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, translation, Ftranslations);
-					modelToClip = FloatUtil.multMatrix(Ftranslations, finalM, modelToClip);
+					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, cam.translation, Ftranslations);
+					finalM = FloatUtil.multMatrix(cam.finalRotation, Ftranslations, finalM);
+					modelToClip = FloatUtil.multMatrix(finalM, coms[i].finalRotation, modelToClip);
 					gl4.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
 					gl4.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
 
@@ -449,6 +525,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         this.sy = y;
         this.swidth = width;
         this.sheight = height;
+        this.cwidth = width/2;
+        this.cheight = height/2;
         projMatrix = BuildPerspProjMat(50, (double)width/(double)height, 0.1d, 400d);
         gl4.glViewport(x, y, width, height);
     }
@@ -490,15 +568,17 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		textureIDs = new int [imageData.length];
-		gl4.glGenTextures(imageData.length,textureIDs,0);
-		ModelManager.setImageIDs(textureIDs);
-		for (int i=0;i<imageData.length;i++){
-			addTexture (imageData[i], textureIDs[i],dims[i*2+1], dims[i*2], gl4);
+		textureIDs = new int[imageData.length];
+		if (imageData.length > 0) {
+			gl4.glGenTextures(imageData.length, textureIDs, 0);
+			ModelManager.setImageIDs(textureIDs);
+			for (int i = 0; i < imageData.length; i++) {
+				addTexture(imageData[i], textureIDs[i], dims[i * 2 + 1], dims[i * 2], gl4);
+			}
+			gl4.glBindTexture(GL4.GL_TEXTURE_2D, 0);
+			ModelManager.checkError();
+			ModelManager.orderTextureIDs();
 		}
-		gl4.glBindTexture(GL4.GL_TEXTURE_2D, 0);
-		ModelManager.checkError();
-		ModelManager.orderTextureIDs();
 	}
 	
 	public void addTexture (byte [] data, int id, int width, int height, GL4 gl4){
@@ -586,8 +666,19 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 	
 	public void initComponents(){
-		coms[0] = new Component(0,0,4f,1,1,true,ModelManager.ONEXONEXONECUBE, ModelManager.getID("Texture",true),"Test");
-		coms[1] = new Component(4,4,4f,1,1,true,ModelManager.ONEXONEXONECUBE, dyntextureIDs[0],"Test");
+		coms = new Component [6];
+		coms[0] = new Component(0,0,2f,0,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[0],"Test");
+		coms[1] = new Component(0,0,3f,0,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[1],"Test");
+		coms[2] = new Component(0,0,2f,0,Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[2],"Test");
+		coms[3] = new Component(-1,0,2f,0,Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[3],"Test");
+		coms[4] = new Component(0,0,2f,-Math.PI/4,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[4],"Test");
+		coms[5] = new Component(0,-1,2f,-Math.PI/4,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[5],"Test");
+		coms[0].alpha = 0f;
+		coms[1].alpha = 0;
+		coms[2].alpha = 1f;
+		coms[3].alpha = 1;
+		coms[4].alpha = 0f;
+		coms[5].alpha = 1;
 	}
 	
 	@Override
@@ -596,13 +687,25 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			animator.stop();
 			glWindow.destroy();
 		} else if (e.getKeyCode() == KeyEvent.VK_A){
-			translation[12]+=2;
+			cam.moveTranslation(0.5f,0,0);
 		} else if (e.getKeyCode() == KeyEvent.VK_D){
-			translation[12]-=2;
+			cam.moveTranslation(-0.5f,0,0);
 		} else if (e.getKeyCode() == KeyEvent.VK_S){
-			translation[13]+=2;
+			cam.moveTranslation(0,0.5f,0);
 		} else if (e.getKeyCode() == KeyEvent.VK_W){
-			translation[13]-=2;
+			cam.moveTranslation(0,-0.5f,0);
+		} else if (e.getKeyCode() == KeyEvent.VK_1){
+			cam.rotateX(Math.PI/18);
+		} else if (e.getKeyCode() == KeyEvent.VK_2){
+			cam.rotateX(-Math.PI/18);
+		} else if (e.getKeyCode() == KeyEvent.VK_3){
+			cam.rotateY(Math.PI/18);
+		} else if (e.getKeyCode() == KeyEvent.VK_4){
+			cam.rotateY(-Math.PI/18);
+		} else if (e.getKeyCode() == KeyEvent.VK_5){
+			cam.rotateZ(Math.PI/18);
+		} else if (e.getKeyCode() == KeyEvent.VK_6){
+			cam.rotateZ(-Math.PI/18);
 		}
 	}
 	
@@ -638,6 +741,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
+		
 	}
 
 	@Override
@@ -647,7 +751,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent arg0) {
-		translation[14]+=arg0.getRotation()[1];
+		amountToMove += arg0.getRotation()[1];
 	}
 	
 }

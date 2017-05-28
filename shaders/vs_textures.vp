@@ -4,5 +4,6 @@ in vec2 positionV;
 out vec2 positionF;
 
 void main() {
-	positionF = positionV;
+	gl_Position = vec4 (positionV,1,1);
+	positionF = positionV/2+0.5;
 }
