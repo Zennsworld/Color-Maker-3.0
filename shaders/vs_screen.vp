@@ -1,0 +1,16 @@
+/*
+ * Vertex shader.
+ */
+
+#version 400
+
+in vec3 position;
+in vec2 vertexUV;
+out vec2 fragmentUV;
+uniform mat4 projMatrix;
+uniform mat4 modelMatrix;
+
+void main() {
+    gl_Position = projMatrix * modelMatrix * vec4(position, 1);
+    fragmentUV = vertexUV;
+}
