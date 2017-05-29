@@ -24,7 +24,6 @@ public class Component {
 	Model model;
 	int textureID;
 	String type;
-	float alpha = 1;
 	
 	boolean pressedAndHeld = false;
 	
@@ -78,7 +77,7 @@ public class Component {
 	
 	public void rotateY (double yinc){
 		yr+=yinc;
-		float [] rotationY = {(float) Math.cos(yr),0,(float) -Math.sin(yr),0,0,1,0,0,(float)Math.sin(yr),0,(float) Math.cos(yr),0,0,0,0,1};
+		float [] rotationY = {(float) Math.cos(yr),0,(float) Math.sin(yr),0,0,1,0,0,(float) -Math.sin(yr),0,(float) Math.cos(yr),0,0,0,0,1};
 		this.rotationY = rotationY;
 	}
 	

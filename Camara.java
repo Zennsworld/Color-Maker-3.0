@@ -14,6 +14,7 @@ public class Camara {
 	public float[] rotationY = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	public float[] rotationZ = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	public float[] finalRotation = new float[16];
+	public float[] finalRotationf = new float[16];
 	
 	public Camara (float xoff, float yoff, float zoff, double xr, double yr, double zr){
 		this.xoff = xoff;
@@ -22,7 +23,9 @@ public class Camara {
 		this.xr = xr;
 		this.yr = yr;
 		this.zr = zr;
-		moveTranslation(xoff, yoff, zoff);
+		translation[12] = xoff;
+		translation[13] = yoff;
+		translation[14] = zoff;
 		rotateX(xr);
 		rotateY(yr);
 		rotateZ(zr);
@@ -30,9 +33,13 @@ public class Camara {
 	}
 	
 	public void moveTranslation (float xinc, float yinc, float zinc){
-		xoff+=xinc;
-		yoff+=yinc;
-		zoff+=zinc;
+		float [] pos = {xinc, yinc, zinc, 1};
+		float [] temp = new float[4];
+		finalRotationf = FloatUtil.invertMatrix(finalRotation, finalRotationf);
+		temp = FloatUtil.multMatrixVec(finalRotationf, pos, temp);
+		xoff+=temp[0];
+		yoff+=temp[1];
+		zoff+=temp[2];
 		translation[12] = xoff;
 		translation[13] = yoff;
 		translation[14] = zoff;
@@ -47,7 +54,7 @@ public class Camara {
 	
 	public void rotateY (double yinc){
 		yr+=yinc;
-		float [] rotationY = {(float) Math.cos(yr),0,(float) -Math.sin(yr),0,0,1,0,0,(float)Math.sin(yr),0,(float) Math.cos(yr),0,0,0,0,1};
+		float [] rotationY = {(float) Math.cos(yr),0,(float) Math.sin(yr),0,0,1,0,0,(float) -Math.sin(yr),0,(float) Math.cos(yr),0,0,0,0,1};
 		this.rotationY = rotationY;
 		updateFinalRotation();
 	}

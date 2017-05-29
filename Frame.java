@@ -75,8 +75,10 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	public final static int SHwithB = 2;
 	public final static int AlphaIDHB = 3;
 	public final static int AlphaIDSH = 4;
+	public final static int HueoffIDHB = 5;
+	public final static int HueoffIDSH = 6;
 	
-	private int [] uniformIDs = new int [5];
+	private int [] uniformIDs = new int [7];
 
     public Frame () {
     	Display display = NewtFactory.createDisplay(null);
@@ -88,10 +90,10 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		glWindow.setSize(dim.width, dim.height);
 		glWindow.setPosition(0, 0);
 		glWindow.setUndecorated(true);
-		glWindow.setAlwaysOnTop(true);
+		glWindow.setAlwaysOnTop(false);
 		glWindow.setFullscreen(false);
 		glWindow.setPointerVisible(true);
-		glWindow.confinePointer(false);
+		glWindow.confinePointer(true);
 		glWindow.setVisible(true);
 		
 		glWindow.addGLEventListener(this);
@@ -346,6 +348,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         uniformIDs[SHwithB] = gl4.glGetUniformLocation(programTextureSHWB, "bri");
         uniformIDs[AlphaIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "alpha");
         uniformIDs[AlphaIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "alpha");
+        uniformIDs[HueoffIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "hueOffset");
+        uniformIDs[HueoffIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "hueOffset");
         
         projMatrixID = gl4.glGetUniformLocation(programScreen, "projMatrix");
         modelMatrixID = gl4.glGetUniformLocation(programScreen, "modelMatrix");
@@ -378,20 +382,65 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		System.exit(0);
 	}
  
-	double angleSpeed = 360d/100000d;
+	double angleSpeed = 1d/10000000d;
 	double color = 0;
 	
 	double amountToMove = 0;
-	double moveSpeed = 1d/1000000000d;
+	double amountToMoveX = 0;
+	double amountToMoveZ = 0;
+	double moveSpeed = 1d/100000000d;
+	double moveAdd = 1d/500000000d;
+	double mouseRotSpeed = 1d/40d;
+	double angle45 = Math.sin(Math.PI/4);
 
 	public void display(GLAutoDrawable drawable) {
 		nanoNow = System.nanoTime();
-	//	coms[0].rotateX((nanoNow-nanoBefore)*angleSpeed/10000000d);
-	//	coms[1].rotateY((nanoNow-nanoBefore)*angleSpeed/10000000d);
-	//	coms[1].updateFinalRotation();
-	//	color = color + (nanoNow-nanoBefore)/10000000;
-		cam.moveTranslation(0, 0, (float) ((nanoNow-nanoBefore)*moveSpeed*amountToMove));
+	/*	for (int i=0;i<coms.length;i++){
+				coms[i].rotateX((nanoNow-nanoBefore)*angleSpeed/10000000d);
+				coms[i].rotateY((nanoNow-nanoBefore)*angleSpeed/10000000d);
+				coms[i].updateFinalRotation();
+		}*/
+		if (direction != 0) {
+			amountToMove = amountToMove + (nanoNow-nanoBefore)*moveAdd;
+		}
+		switch (direction){
+			case(-3):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;
+			case(3):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;		
+			case(2):
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;		
+			case(-2):
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;	
+			case(-1):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;
+			case(1):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;		
+			case(5):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;		
+			case(-5):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;
+			case(0):
+			amountToMoveX -= (nanoNow-nanoBefore)*moveSpeed*amountToMoveX*angle45;
+			amountToMoveZ -= (nanoNow-nanoBefore)*moveSpeed*amountToMoveZ*angle45;
+		}
+		cam.moveTranslation((float)(amountToMoveX), 0, (float) (amountToMoveZ));
+		cam.rotateY((float)(mouseRotSpeed * YMinc));
+		cam.rotateX((float)(mouseRotSpeed * XMinc));
 		amountToMove -= (nanoNow-nanoBefore)*moveSpeed*amountToMove;
+		color = color + (nanoNow-nanoBefore)*angleSpeed;
 		nanoBefore = nanoNow;
 		
 	    
@@ -408,7 +457,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 			gl4.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color / 60f),1), 0);
+				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 			
@@ -416,7 +465,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			
 			gl4.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color / 60f),1), 0);
+				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 
@@ -428,6 +477,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			{
 				gl4.glUniform1f(uniformIDs[HBwithS], 1);
 				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1);
+				gl4.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 			
@@ -435,7 +485,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			gl4.glBindVertexArray(square.getVAO());
 			{
 				gl4.glUniform1f(uniformIDs[HBwithS], 0);
-				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1);
+				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1f);
+				gl4.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 
@@ -446,7 +497,8 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			gl4.glBindVertexArray(square.getVAO());
 			{
 				gl4.glUniform1f(uniformIDs[SHwithB], 1);
-				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1);
+				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1f);
+				gl4.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 			
@@ -455,6 +507,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			{
 				gl4.glUniform1f(uniformIDs[SHwithB], 0);
 				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1);
+				gl4.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
 				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
 			}
 			
@@ -471,9 +524,9 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 					gl4.glBindTexture(GL.GL_TEXTURE_2D,coms[i].textureID);
 					gl4.glUniform1i(textureShaderID, 0);
 					
-					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, cam.translation, Ftranslations);
-					finalM = FloatUtil.multMatrix(cam.finalRotation, Ftranslations, finalM);
-					modelToClip = FloatUtil.multMatrix(finalM, coms[i].finalRotation, modelToClip);
+					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, coms[i].finalRotation, Ftranslations);
+					finalM = FloatUtil.multMatrix(cam.finalRotation, cam.translation, finalM);
+					modelToClip = FloatUtil.multMatrix(finalM, Ftranslations, modelToClip);
 					gl4.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
 					gl4.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
 
@@ -669,16 +722,25 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		coms = new Component [6];
 		coms[0] = new Component(0,0,2f,0,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[0],"Test");
 		coms[1] = new Component(0,0,3f,0,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[1],"Test");
-		coms[2] = new Component(0,0,2f,0,Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[2],"Test");
-		coms[3] = new Component(-1,0,2f,0,Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[3],"Test");
+		coms[2] = new Component(0,0,2f,0,-Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[2],"Test");
+		coms[3] = new Component(-1,0,2f,0,-Math.PI/4,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[3],"Test");
 		coms[4] = new Component(0,0,2f,-Math.PI/4,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[4],"Test");
 		coms[5] = new Component(0,-1,2f,-Math.PI/4,0,0,1,1,true,ModelManager.ONEXONE, dyntextureIDs[5],"Test");
-		coms[0].alpha = 0f;
-		coms[1].alpha = 0;
-		coms[2].alpha = 1f;
-		coms[3].alpha = 1;
-		coms[4].alpha = 0f;
-		coms[5].alpha = 1;
+	}
+	
+	int direction = 0;
+	//Right, Left, Up, Down
+	int [] directions = {-3,3,2,-2};
+	boolean [] directionDown = {false,false,false,false};
+	
+	public void keyState (int key, boolean down){
+		if (down&&directionDown[key]==false){
+			direction += directions[key];
+			directionDown [key] = true;
+		} else if (down==false&&directionDown[key]) {
+			direction -= directions[key];			
+			directionDown [key] = false;
+		}
 	}
 	
 	@Override
@@ -687,31 +749,45 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			animator.stop();
 			glWindow.destroy();
 		} else if (e.getKeyCode() == KeyEvent.VK_A){
-			cam.moveTranslation(0.5f,0,0);
+			keyState(0, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_D){
-			cam.moveTranslation(-0.5f,0,0);
+			keyState(1, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_S){
-			cam.moveTranslation(0,0.5f,0);
+			keyState(3, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_W){
-			cam.moveTranslation(0,-0.5f,0);
+			keyState(2, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_1){
-			cam.rotateX(Math.PI/18);
+			cam.rotateX(Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_2){
-			cam.rotateX(-Math.PI/18);
+			cam.rotateX(-Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_3){
-			cam.rotateY(Math.PI/18);
+			cam.rotateY(+Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_4){
-			cam.rotateY(-Math.PI/18);
+			cam.rotateY(-Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_5){
-			cam.rotateZ(Math.PI/18);
+			cam.rotateZ(Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_6){
-			cam.rotateZ(-Math.PI/18);
+			cam.rotateZ(-Math.PI/12);
+		} else if (e.getKeyCode() == KeyEvent.VK_UP){
+			angleSpeed = angleSpeed + 1d/50000000d;
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN){
+			angleSpeed = angleSpeed - 1d/50000000d;
 		}
 	}
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		
+		if (e.isAutoRepeat() == false) {
+			if (e.getKeyCode() == KeyEvent.VK_A) {
+				keyState(0, false);
+			} else if (e.getKeyCode() == KeyEvent.VK_D) {
+				keyState(1, false);
+			} else if (e.getKeyCode() == KeyEvent.VK_S) {
+				keyState(3, false);
+			} else if (e.getKeyCode() == KeyEvent.VK_W) {
+				keyState(2, false);
+			}
+		}
 	}
 
 	@Override
@@ -734,9 +810,42 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		
 	}
 
+	double mouseX, mouseY;
+	double XMinc, YMinc;
+	double N, P;
+	{
+		N = -1;
+		P = (1050-2d)/1050;
+	}
+	boolean setXM = false;
+	
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		
+		mouseX = ((double) (arg0.getX())/(double) (swidth))*2 - 1f;
+		mouseY = ((double) (arg0.getY())/(double) (sheight))*2 - 1f;
+		if (mouseX <= N){
+			YMinc = 1;
+			XMinc = mouseY;
+			setXM = true;
+		} else if (mouseX >= P){	
+			YMinc = -1;
+			XMinc = mouseY;
+			setXM = true;
+		} else {
+			YMinc = 0;
+		}
+		if (mouseY <= N){
+			XMinc = -1;
+			YMinc = -mouseX;
+		} else if (mouseY >= P){	
+			XMinc = 1;
+			YMinc = -mouseX;
+		} else {
+			if (setXM==false){
+				XMinc = 0;
+			}
+		}
+		setXM = false;
 	}
 
 	@Override
@@ -751,7 +860,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent arg0) {
-		amountToMove += arg0.getRotation()[1];
+		
 	}
 	
 }
