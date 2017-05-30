@@ -2,8 +2,9 @@
 
 in vec2 positionV;
 out vec2 positionF;
+uniform vec4 offSets;
 
 void main() {
 	gl_Position = vec4 (positionV,1,1);
-	positionF = positionV/2+0.5;
+	positionF = vec2 (offSets.x + positionV.x*offSets.y, offSets.z + positionV.y*offSets.w)/2+0.5;
 }
