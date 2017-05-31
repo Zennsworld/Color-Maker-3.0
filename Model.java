@@ -6,14 +6,11 @@ public class Model {
 	private int IBO;
 	private int indexLength;
 	
-	private int drawType;
-	
-	public Model (int VAO, int VBO, int IBO, int indexLength, int drawType){
+	public Model (int VAO, int VBO, int IBO, int indexLength){
 		this.VAO = VAO;
 		this.VBO = VBO;
 		this.IBO = IBO;
 		this.indexLength = indexLength;
-		this.drawType = drawType;
 	}
 	
 	public int getVAO (){
@@ -30,9 +27,5 @@ public class Model {
 	
 	public int getIndexLength (){
 		return indexLength;
-	}
-	
-	public int getDrawType (){
-		return drawType;
 	}
 }
