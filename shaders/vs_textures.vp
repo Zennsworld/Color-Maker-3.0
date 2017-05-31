@@ -1,7 +1,7 @@
-#version 400
+#version 410
 
-in vec2 positionV;
-out vec2 positionF;
+layout(location = 0) in vec2 positionV;
+layout(location = 0) out vec2 positionF;
 uniform vec4 offSets;
 
 void main() {

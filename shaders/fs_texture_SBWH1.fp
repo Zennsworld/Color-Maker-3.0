@@ -1,7 +1,7 @@
-#version 400
+#version 410
 
-in vec2 positionF;
-out vec4 outputColorF;
+layout(location = 0) in vec2 positionF;
+layout(location = 0) out vec4 outputColorF;
 uniform vec4 hueRGB;
 
 void main() {

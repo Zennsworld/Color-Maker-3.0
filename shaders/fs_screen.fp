@@ -1,11 +1,7 @@
-/*
- * Fragment shader.
- */
-
-#version 400
+#version 410
 
 in vec3 fragmentUV;
-out vec4 outputColor;
+layout(location = 0) out vec4 outputColor;
 uniform sampler2DArray textures;
 
 void main() {

@@ -8,6 +8,7 @@ public class Component {
 	double xr;
 	double yr;
 	double zr;
+	float [] scaleMatrix = new float[16];
 	float [] positionMatrix = new float[16];
 	float [] rotationX = new float[16];
 	float [] rotationY = new float[16];
@@ -15,6 +16,7 @@ public class Component {
 	float [] finalRotation = new float[16];
 	float width;
 	float height;
+	float depth;
 	float eventx;
 	float eventy;
 	float eventwidth;
@@ -28,7 +30,7 @@ public class Component {
 	boolean pressedAndHeld = false;
 	
 	//texture ID needs to be the GL ID, not the array ID (for names pass in true)
-	public Component (float x, float y, float z, double xr, double yr, double zr, float width, float height, boolean events, int modelID, int textureID, String type){
+	public Component (float x, float y, float z, double xr, double yr, double zr, float width, float height, float depth, boolean events, int modelID, int textureID, String type){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -37,6 +39,7 @@ public class Component {
 		this.zr = zr;
 		this.width = width;
 		this.height = height;
+		this.depth = depth;
 		eventx = x;
 		eventy = y;
 		eventwidth = width;
@@ -46,6 +49,7 @@ public class Component {
 		model = ModelManager.getModel(modelID);
 		this.textureID = textureID;
 		this.type = type;
+		updateLocalScaleMatrix();
 		updateLocalPositionMatrix();
 		rotateX(xr);
 		rotateY(yr);
@@ -67,6 +71,11 @@ public class Component {
 	public void updateLocalPositionMatrix (){
 		float[] positionMatrix = {1,0,0,0,0,1,0,0,0,0,1,0,x*2,y*2,-z*2,1};
 		this.positionMatrix = positionMatrix;
+	}
+	
+	public void updateLocalScaleMatrix (){
+		float[] scaleMatrix = {width,0,0,0,0,height,0,0,0,0,depth,0,0,0,0,1};
+		this.scaleMatrix = scaleMatrix;
 	}
 	
 	public void rotateX (double xinc){

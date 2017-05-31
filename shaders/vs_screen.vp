@@ -1,12 +1,8 @@
-/*
- * Vertex shader.
- */
-
-#version 400
+#version 410
 
 in vec3 position;
 in vec3 vertexUV;
-out vec3 fragmentUV;
+layout(location = 0) out vec3 fragmentUV;
 uniform mat4 projMatrix;
 uniform mat4 modelMatrix;
 

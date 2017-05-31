@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL4ES3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
@@ -67,15 +67,13 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	public final static int SBwithH = 0;
 	public final static int HBwithS = 1;
 	public final static int SHwithB = 2;
-	public final static int AlphaIDHB = 3;
-	public final static int AlphaIDSH = 4;
-	public final static int HueoffIDHB = 5;
-	public final static int HueoffIDSH = 6;
-	public final static int offSetsIDSB = 7;
-	public final static int offSetsIDHB = 8;
-	public final static int offSetsIDSH = 9;
+	public final static int HueoffIDHB = 3;
+	public final static int HueoffIDSH = 4;
+	public final static int offSetsIDSB = 5;
+	public final static int offSetsIDHB = 6;
+	public final static int offSetsIDSH = 7;
 	
-	private int [] uniformIDs = new int [10];
+	private int [] uniformIDs = new int [8];
 
     public Frame () {
     	Display display = NewtFactory.createDisplay(null);
@@ -151,7 +149,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		(float) +1, (float) -1, (float) -1, (float) 1, (float) 0, (float) 5},
 		};
 		
-	private int [] drawTypes = {GL4.GL_TRIANGLES};
+	private int [] drawTypes = {GL4ES3.GL_TRIANGLES};
     
 	private short[] indexDataTextureRender = new short[textureRenderSquare.length/2];
 	private int [] VAOTR = new int [1];
@@ -182,6 +180,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	private float modelAlignmentY = -1;
     
 	Camara cam = new Camara (-3,-3,0,Math.PI/10, Math.PI/10,0);
+	private float[] finalS = new float[16];
 	private float[] finalM = new float[16];
     private float[] modelToClip = new float[16];
     private float[] projMatrix = new float[16];
@@ -195,137 +194,136 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	public void init(GLAutoDrawable drawable) {
 		System.out.println("init");
 
-		GL4 gl4 = drawable.getGL().getGL4();
+		GL4ES3 gl4es3 = drawable.getGL().getGL4();
 
-		initVbo(gl4);
+		initVbo(gl4es3);
 
-		initIbo(gl4);	
+		initIbo(gl4es3);	
 
-		initVao(gl4);
+		initVao(gl4es3);
 
 		for (int i=0;i<objects[0].length;i++){
 			ModelManager.addModel(new Model (objects[VAO][i], objects[VBO][i], objects[IBO][i], indexData[i].length, drawTypes[i]), modelAlignmentX-vertexData[i][0], modelAlignmentY-vertexData[i][1]);
 		}
 		
-		square = new Model (VAOTR[0], VBOTR[0], IBOTR[0], indexDataTextureRender.length, GL4.GL_TRIANGLES);
+		square = new Model (VAOTR[0], VBOTR[0], IBOTR[0], indexDataTextureRender.length, GL4ES3.GL_TRIANGLES);
 		
-		initTextures(gl4, "images");
+		initTextures(gl4es3, "images");
 		
-		int [] temp = dynamicTextureInit(gl4);
+		int [] temp = dynamicTextureInit(gl4es3);
 		
 		dyntextureID = temp[0];
 		for (int i=0;i<temp.length-1;i++){
 			dynfboIDs[i] = temp[i+1];
 		}
 				
-		initProgram(gl4);
+		initProgram(gl4es3);
 		
 		addListeners();
 		
 		initComponents();
 		
-		gl4.glEnable(GL4.GL_DEPTH_TEST);
-		//gl4.glEnable(GL4.GL_ALPHA);
-		gl4.glEnable(GL4.GL_BLEND);
-		gl4.glBlendFunc(GL4.GL_SRC_ALPHA,GL4.GL_ONE_MINUS_SRC_ALPHA);
+		gl4es3.glEnable(GL4ES3.GL_DEPTH_TEST);
+		gl4es3.glEnable(GL4ES3.GL_BLEND);
+		gl4es3.glBlendFunc(GL4ES3.GL_SRC_ALPHA,GL4ES3.GL_ONE_MINUS_SRC_ALPHA);
 		
 		nanoBefore = System.nanoTime();
 	}
 
-	private void initVbo(GL4 gl4) {
-		gl4.glGenBuffers(1, VBOTR, 0);
-		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, VBOTR[0]);
+	private void initVbo(GL4ES3 gl4es3) {
+		gl4es3.glGenBuffers(1, VBOTR, 0);
+		gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, VBOTR[0]);
 		int sizeTR = textureRenderSquare.length  * GLBuffers.SIZEOF_FLOAT;
 		FloatBuffer vertexBufferTR = GLBuffers.newDirectFloatBuffer(textureRenderSquare);
-		gl4.glBufferData(GL4.GL_ARRAY_BUFFER, sizeTR, vertexBufferTR, GL4.GL_STATIC_DRAW);
+		gl4es3.glBufferData(GL4ES3.GL_ARRAY_BUFFER, sizeTR, vertexBufferTR, GL4ES3.GL_STATIC_DRAW);
 		
-		gl4.glGenBuffers(vertexData.length, objects[VBO], 0);
+		gl4es3.glGenBuffers(vertexData.length, objects[VBO], 0);
 		{
 			for (int i = 0; i < vertexData.length; i++) {
-				gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, objects[VBO][i]);
+				gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, objects[VBO][i]);
 				int size = vertexData[i].length * GLBuffers.SIZEOF_FLOAT;
 				FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(vertexData[i]);
-				gl4.glBufferData(GL4.GL_ARRAY_BUFFER, size, vertexBuffer, GL4.GL_STATIC_DRAW);
+				gl4es3.glBufferData(GL4ES3.GL_ARRAY_BUFFER, size, vertexBuffer, GL4ES3.GL_STATIC_DRAW);
 			}
 		}
-		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER,0);
+		gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER,0);
 
-		checkError(gl4, "initVbo");
+		checkError(gl4es3, "initVbo");
 	}
 
-	private void initIbo(GL4 gl4) {
-		gl4.glGenBuffers(1, IBOTR, 0);
-		gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
+	private void initIbo(GL4ES3 gl4es3) {
+		gl4es3.glGenBuffers(1, IBOTR, 0);
+		gl4es3.glBindBuffer(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
 		int sizeTR = indexDataTextureRender.length * GLBuffers.SIZEOF_SHORT;
 		ShortBuffer indexBufferTR = GLBuffers.newDirectShortBuffer(indexDataTextureRender);
-		gl4.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, sizeTR, indexBufferTR, GL4.GL_STATIC_DRAW);
+		gl4es3.glBufferData(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, sizeTR, indexBufferTR, GL4ES3.GL_STATIC_DRAW);
 		
-		gl4.glGenBuffers(indexData.length, objects[IBO], 0);
+		gl4es3.glGenBuffers(indexData.length, objects[IBO], 0);
 		{
 			for (int i = 0; i < indexData.length; i++) {
-				gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, objects[IBO][i]);
+				gl4es3.glBindBuffer(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, objects[IBO][i]);
 				int size = indexData[i].length * GLBuffers.SIZEOF_SHORT;
 				ShortBuffer indexBuffer = GLBuffers.newDirectShortBuffer(indexData[i]);
-				gl4.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, size, indexBuffer, GL4.GL_STATIC_DRAW);
+				gl4es3.glBufferData(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, size, indexBuffer, GL4ES3.GL_STATIC_DRAW);
 			}
 		}
-		gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
+		gl4es3.glBindBuffer(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		checkError(gl4, "initIbo");
+		checkError(gl4es3, "initIbo");
 	}
 
-	private void initVao(GL4 gl4) {
+	private void initVao(GL4ES3 gl4es3) {
 		
-		gl4.glGenVertexArrays(1, VAOTR, 0);
-		gl4.glBindVertexArray(VAOTR[0]);
+		gl4es3.glGenVertexArrays(1, VAOTR, 0);
+		gl4es3.glBindVertexArray(VAOTR[0]);
 		{
-			gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
+			gl4es3.glBindBuffer(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, IBOTR[0]);
 			{
-				gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, VBOTR[0]);
+				gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, VBOTR[0]);
 				{
 					int stride = (2) * GLBuffers.SIZEOF_FLOAT;
-					gl4.glEnableVertexAttribArray(POSITION);
-					gl4.glVertexAttribPointer(POSITION, 2, GL4.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
+					gl4es3.glEnableVertexAttribArray(POSITION);
+					gl4es3.glVertexAttribPointer(POSITION, 2, GL4ES3.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
 				}
-				gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
+				gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, 0);
 			}
 		}
 		
-		gl4.glGenVertexArrays(vertexData.length, objects[VAO], 0);
+		gl4es3.glGenVertexArrays(vertexData.length, objects[VAO], 0);
 		for (int i = 0; i < vertexData.length; i++) {
-			gl4.glBindVertexArray(objects[VAO][i]);
+			gl4es3.glBindVertexArray(objects[VAO][i]);
 			{
-				gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, objects[IBO][i]);
+				gl4es3.glBindBuffer(GL4ES3.GL_ELEMENT_ARRAY_BUFFER, objects[IBO][i]);
 				{
-					gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, objects[VBO][i]);
+					gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, objects[VBO][i]);
 					{
 						int stride = (3 + 3) * GLBuffers.SIZEOF_FLOAT;
-						gl4.glEnableVertexAttribArray(POSITION);
-						gl4.glVertexAttribPointer(POSITION, 3, GL4.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
-						gl4.glEnableVertexAttribArray(COLOR);
-						gl4.glVertexAttribPointer(COLOR, 3, GL4.GL_FLOAT, false, stride, 3 * GLBuffers.SIZEOF_FLOAT);
+						gl4es3.glEnableVertexAttribArray(POSITION);
+						gl4es3.glVertexAttribPointer(POSITION, 3, GL4ES3.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
+						gl4es3.glEnableVertexAttribArray(COLOR);
+						gl4es3.glVertexAttribPointer(COLOR, 3, GL4ES3.GL_FLOAT, false, stride, 3 * GLBuffers.SIZEOF_FLOAT);
 					}
-					gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
+					gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, 0);
 				}
 			}
 		}
-		gl4.glBindVertexArray(0);
+		gl4es3.glBindVertexArray(0);
 
-		checkError(gl4, "initVao");
+		checkError(gl4es3, "initVao");
 	}
 
-    private void initProgram(GL4 gl4) {
-    	ShaderCode vertShader = ShaderCode.create(gl4, GL_VERTEX_SHADER, 1, this.getClass(),
+    private void initProgram(GL4ES3 gl4es3) {
+    	ShaderCode vertShader = ShaderCode.create(gl4es3, GL_VERTEX_SHADER, 1, this.getClass(),
                 SHADERS_ROOT, (new String[]{"vs_screen"}), "", null, true);
-        ShaderCode fragShader = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        ShaderCode fragShader = ShaderCode.create(gl4es3, GL_FRAGMENT_SHADER, 1, this.getClass(),
                 SHADERS_ROOT, (new String[]{"fs_screen"}), "", null, true);
-        ShaderCode vertShaderTexture = ShaderCode.create(gl4, GL_VERTEX_SHADER, 1, this.getClass(),
+        ShaderCode vertShaderTexture = ShaderCode.create(gl4es3, GL_VERTEX_SHADER, 1, this.getClass(),
         		SHADERS_ROOT, (new String[]{"vs_textures"}), "", null, true);
-        ShaderCode fragShaderSBWH1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        ShaderCode fragShaderSBWH1 = ShaderCode.create(gl4es3, GL_FRAGMENT_SHADER, 1, this.getClass(),
         		SHADERS_ROOT, (new String[]{"fs_texture_SBWH1"}), "", null, true);
-        ShaderCode fragShaderHBWS1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        ShaderCode fragShaderHBWS1 = ShaderCode.create(gl4es3, GL_FRAGMENT_SHADER, 1, this.getClass(),
         		SHADERS_ROOT, (new String[]{"fs_texture_HBWS1"}), "", null, true);
-        ShaderCode fragShaderSHWB1 = ShaderCode.create(gl4, GL_FRAGMENT_SHADER, 1, this.getClass(),
+        ShaderCode fragShaderSHWB1 = ShaderCode.create(gl4es3, GL_FRAGMENT_SHADER, 1, this.getClass(),
         		SHADERS_ROOT, (new String[]{"fs_texture_SHWB1"}), "", null, true);
 
         ShaderProgram shaderProgram = new ShaderProgram();
@@ -344,76 +342,63 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         shaderProgramTextureSHWB.add(vertShaderTexture);
         shaderProgramTextureSHWB.add(fragShaderSHWB1);
 
-        shaderProgram.init(gl4);
-        ShaderprogramTextureSBWH.init(gl4);
-        shaderProgramTextureHBWS.init(gl4);
-        shaderProgramTextureSHWB.init(gl4);
+        shaderProgram.init(gl4es3);
+        ShaderprogramTextureSBWH.init(gl4es3);
+        shaderProgramTextureHBWS.init(gl4es3);
+        shaderProgramTextureSHWB.init(gl4es3);
 
         programScreen = shaderProgram.program();
         programTextureSBWH = ShaderprogramTextureSBWH.program();
         programTextureHBWS = shaderProgramTextureHBWS.program();
         programTextureSHWB = shaderProgramTextureSHWB.program();
         
-        gl4.glBindAttribLocation(programTextureSBWH, 0, "positionV");
-        gl4.glBindFragDataLocation(programTextureSBWH, 0, "outputColorF");
-        gl4.glBindFragDataLocation(programTextureSBWH, 0, "positionF");
+        gl4es3.glBindAttribLocation(programTextureSBWH, 0, "positionV");   
+        gl4es3.glBindAttribLocation(programTextureHBWS, 0, "positionV");   
+        gl4es3.glBindAttribLocation(programTextureSHWB, 0, "positionV");
+        gl4es3.glBindAttribLocation(programScreen, 0, "position");
+        gl4es3.glBindAttribLocation(programScreen, 3, "vertexUV");
         
-        gl4.glBindAttribLocation(programTextureHBWS, 0, "positionV");
-        gl4.glBindFragDataLocation(programTextureHBWS, 0, "outputColorF");
-        gl4.glBindFragDataLocation(programTextureHBWS, 0, "positionF");
+        shaderProgram.link(gl4es3, System.out);
+        ShaderprogramTextureSBWH.link(gl4es3, System.out);
+        shaderProgramTextureHBWS.link(gl4es3, System.out);
+        shaderProgramTextureSHWB.link(gl4es3, System.out);
         
-        gl4.glBindAttribLocation(programTextureSHWB, 0, "positionV");
-        gl4.glBindFragDataLocation(programTextureSHWB, 0, "outputColorF");
-        gl4.glBindFragDataLocation(programTextureSHWB, 0, "positionF");
+        uniformIDs[SBwithH] = gl4es3.glGetUniformLocation(programTextureSBWH, "hueRGB");
+        uniformIDs[HBwithS] = gl4es3.glGetUniformLocation(programTextureHBWS, "sat");
+        uniformIDs[SHwithB] = gl4es3.glGetUniformLocation(programTextureSHWB, "bri");
+        uniformIDs[HueoffIDHB] = gl4es3.glGetUniformLocation(programTextureHBWS, "hueOffset");
+        uniformIDs[HueoffIDSH] = gl4es3.glGetUniformLocation(programTextureSHWB, "hueOffset");
+        uniformIDs[offSetsIDSB] = gl4es3.glGetUniformLocation(programTextureSBWH, "offSets");
+        uniformIDs[offSetsIDHB] = gl4es3.glGetUniformLocation(programTextureHBWS, "offSets");
+        uniformIDs[offSetsIDSH] = gl4es3.glGetUniformLocation(programTextureSHWB, "offSets");
+        
+        projMatrixID = gl4es3.glGetUniformLocation(programScreen, "projMatrix");
+        modelMatrixID = gl4es3.glGetUniformLocation(programScreen, "modelMatrix");
+        textureShaderID = gl4es3.glGetUniformLocation(programScreen, "textures");
 
-        gl4.glBindAttribLocation(programScreen, 0, "position");
-        gl4.glBindAttribLocation(programScreen, 3, "vertexUV");
-        gl4.glBindFragDataLocation(programScreen, 0, "outputColor");
-        gl4.glBindFragDataLocation(programScreen, 0, "fragmentUV");
-        
-        shaderProgram.link(gl4, System.out);
-        ShaderprogramTextureSBWH.link(gl4, System.out);
-        shaderProgramTextureHBWS.link(gl4, System.out);
-        shaderProgramTextureSHWB.link(gl4, System.out);
-        
-        uniformIDs[SBwithH] = gl4.glGetUniformLocation(programTextureSBWH, "hueRGB");
-        uniformIDs[HBwithS] = gl4.glGetUniformLocation(programTextureHBWS, "sat");
-        uniformIDs[SHwithB] = gl4.glGetUniformLocation(programTextureSHWB, "bri");
-        uniformIDs[AlphaIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "alpha");
-        uniformIDs[AlphaIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "alpha");
-        uniformIDs[HueoffIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "hueOffset");
-        uniformIDs[HueoffIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "hueOffset");
-        uniformIDs[offSetsIDSB] = gl4.glGetUniformLocation(programTextureSBWH, "offSets");
-        uniformIDs[offSetsIDHB] = gl4.glGetUniformLocation(programTextureHBWS, "offSets");
-        uniformIDs[offSetsIDSH] = gl4.glGetUniformLocation(programTextureSHWB, "offSets");
-        
-        projMatrixID = gl4.glGetUniformLocation(programScreen, "projMatrix");
-        modelMatrixID = gl4.glGetUniformLocation(programScreen, "modelMatrix");
-        textureShaderID = gl4.glGetUniformLocation(programScreen, "textures");
-
-        checkError(gl4, "initProgram");
+        checkError(gl4es3, "initProgram");
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
 		System.out.println("dispose");
 
-		GL4 gl4 = drawable.getGL().getGL4();
+		GL4ES3 gl4es3 = drawable.getGL().getGL4();
 		
-		gl4.glDeleteProgram(programTextureSBWH);
-		gl4.glDeleteProgram(programTextureHBWS);
-		gl4.glDeleteProgram(programScreen);
-		gl4.glDeleteVertexArrays(vertexData.length, objects[0], 0);
+		gl4es3.glDeleteProgram(programTextureSBWH);
+		gl4es3.glDeleteProgram(programTextureHBWS);
+		gl4es3.glDeleteProgram(programScreen);
+		gl4es3.glDeleteVertexArrays(vertexData.length, objects[0], 0);
 
-		gl4.glDeleteBuffers(vertexData.length, objects[1], 0);
+		gl4es3.glDeleteBuffers(vertexData.length, objects[1], 0);
 
-		gl4.glDeleteBuffers(vertexData.length, objects[2], 0);
+		gl4es3.glDeleteBuffers(vertexData.length, objects[2], 0);
 		
 		if (textureIDs.length>0){
-			gl4.glDeleteTextures(textureIDs.length, textureIDs, 0);
+			gl4es3.glDeleteTextures(textureIDs.length, textureIDs, 0);
 		}
-		gl4.glDeleteFramebuffers(dynfboIDs.length, dynfboIDs, 0);
-		gl4.glDeleteTextures(1, new int [] {dyntextureID}, 0);
+		gl4es3.glDeleteFramebuffers(dynfboIDs.length, dynfboIDs, 0);
+		gl4es3.glDeleteTextures(1, new int [] {dyntextureID}, 0);
 		
 		System.exit(0);
 	}
@@ -474,105 +459,102 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		color = color + (nanoNow-nanoBefore)*angleSpeed;
 		nanoBefore = nanoNow;
 	    
-		GL4 gl4 = drawable.getGL().getGL4();
-		gl4.glClearColor(0f, 0f, 0f, 1f);
-		gl4.glClearDepthf(1f);
-		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		GL4ES3 gl4es3 = drawable.getGL().getGL4();
+		gl4es3.glClearColor(0f, 0f, 0f, 1f);
+		gl4es3.glClearDepthf(1f);
+		gl4es3.glClear(GL4ES3.GL_COLOR_BUFFER_BIT | GL4ES3.GL_DEPTH_BUFFER_BIT);
 		
-		gl4.glViewport(0, 0, DYNTEXTURESIZE, DYNTEXTURESIZE);
-		gl4.glUseProgram(programTextureSBWH);
+		gl4es3.glViewport(0, 0, DYNTEXTURESIZE, DYNTEXTURESIZE);
+		gl4es3.glUseProgram(programTextureSBWH);
 		{
 
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[0]);
-			gl4.glBindVertexArray(square.getVAO());
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[0]);
+			gl4es3.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
-			checkError(gl4, "display");
+			checkError(gl4es3, "display");
 			
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[1]);
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[1]);
 			
-			gl4.glBindVertexArray(square.getVAO());
+			gl4es3.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
-			}
-
-		}
-		gl4.glUseProgram(programTextureHBWS);
-		{
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[2]);
-			gl4.glBindVertexArray(square.getVAO());
-			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform1f(uniformIDs[HBwithS], 1);
-				gl4.glUniform1f(uniformIDs[AlphaIDHB], 0.25f);
-				gl4.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
-			}
-			
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[3]);
-			gl4.glBindVertexArray(square.getVAO());
-			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform1f(uniformIDs[HBwithS], 0);
-				gl4.glUniform1f(uniformIDs[AlphaIDHB], 1f);
-				gl4.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 
 		}
-		gl4.glUseProgram(programTextureSHWB);
+		gl4es3.glUseProgram(programTextureHBWS);
 		{
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[4]);
-			gl4.glBindVertexArray(square.getVAO());
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[2]);
+			gl4es3.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform1f(uniformIDs[SHwithB], 1);
-				gl4.glUniform1f(uniformIDs[AlphaIDSH], 0.25f);
-				gl4.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform1f(uniformIDs[HBwithS], 1);
+				gl4es3.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, dynfboIDs[5]);
-			gl4.glBindVertexArray(square.getVAO());
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[3]);
+			gl4es3.glBindVertexArray(square.getVAO());
 			{
-				gl4.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
-				gl4.glUniform1f(uniformIDs[SHwithB], 0);
-				gl4.glUniform1f(uniformIDs[AlphaIDSH], 1);
-				gl4.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
-				gl4.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform1f(uniformIDs[HBwithS], 0);
+				gl4es3.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+			}
+
+		}
+		gl4es3.glUseProgram(programTextureSHWB);
+		{
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[4]);
+			gl4es3.glBindVertexArray(square.getVAO());
+			{
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform1f(uniformIDs[SHwithB], 1);
+				gl4es3.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+			}
+			
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[5]);
+			gl4es3.glBindVertexArray(square.getVAO());
+			{
+				gl4es3.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
+				gl4es3.glUniform1f(uniformIDs[SHwithB], 0);
+				gl4es3.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			
 		}
-		gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
+		gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, 0);
 		 
-		gl4.glUseProgram(programScreen);
-		gl4.glViewport(sx, sy, swidth, sheight);
+		gl4es3.glUseProgram(programScreen);
+		gl4es3.glViewport(sx, sy, swidth, sheight);
 		
 		{
 			for (int i = 0; i < coms.length; i++) {
-				gl4.glBindVertexArray(coms[i].model.getVAO());
+				gl4es3.glBindVertexArray(coms[i].model.getVAO());
 				{
-					gl4.glBindTexture(GL4.GL_TEXTURE_2D_ARRAY,coms[i].textureID);
-					gl4.glUniform1i(textureShaderID, 0);
+					gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D_ARRAY,coms[i].textureID);
+					gl4es3.glUniform1i(textureShaderID, 0);
 					
-					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, coms[i].finalRotation, Ftranslations);
+					finalS = FloatUtil.multMatrix(coms[i].finalRotation, coms[i].scaleMatrix, Ftranslations);
+					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, finalS, Ftranslations);
 					finalM = FloatUtil.multMatrix(cam.finalRotation, cam.translation, finalM);
 					modelToClip = FloatUtil.multMatrix(finalM, Ftranslations, modelToClip);
-					gl4.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
-					gl4.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
+					gl4es3.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
+					gl4es3.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
 
-					gl4.glDrawElements(coms[i].model.getDrawType(), coms[i].model.getIndexLength(), GL4.GL_UNSIGNED_SHORT, 0);
+					gl4es3.glDrawElements(coms[i].model.getDrawType(), coms[i].model.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 				}
 			}
-			gl4.glBindVertexArray(0);
+			gl4es3.glBindVertexArray(0);
 		}
-		gl4.glUseProgram(0);
-		checkError(gl4, "display");
+		gl4es3.glUseProgram(0);
+		checkError(gl4es3, "display");
 	}
 
 	protected boolean checkError(GL gl, String title) {
@@ -609,7 +591,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         System.out.println("reshape");
-        GL4 gl4 = drawable.getGL().getGL4();
+        GL4ES3 gl4es3 = drawable.getGL().getGL4();
         this.sx = x;
         this.sy = y;
         this.swidth = width;
@@ -617,7 +599,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         this.cwidth = width/2;
         this.cheight = height/2;
         projMatrix = BuildPerspProjMat(50, (double)width/(double)height, 0.1d, 400d);
-        gl4.glViewport(x, y, width, height);
+        gl4es3.glViewport(x, y, width, height);
     }
 
     public float[] BuildPerspProjMat(double fov, double aspect, double znear, double zfar) {
@@ -640,7 +622,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		return m;
 	}
 
-    private void initTextures(GL4 gl4, String folderName) {
+    private void initTextures(GL4ES3 gl4es3, String folderName) {
 		int [] dims = new int [0];
 		byte [][] imageData = new byte [0][];
 		try {
@@ -659,25 +641,25 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		}
 		textureIDs = new int[imageData.length];
 		if (imageData.length > 0) {
-			gl4.glGenTextures(imageData.length, textureIDs, 0);
+			gl4es3.glGenTextures(imageData.length, textureIDs, 0);
 			ModelManager.setImageIDs(textureIDs);
 			for (int i = 0; i < imageData.length; i++) {
-				addTexture(imageData[i], textureIDs[i], dims[i * 2 + 1], dims[i * 2], gl4);
+				addTexture(imageData[i], textureIDs[i], dims[i * 2 + 1], dims[i * 2], gl4es3);
 			}
-			gl4.glBindTexture(GL4.GL_TEXTURE_2D, 0);
+			gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D, 0);
 			ModelManager.checkError();
 			ModelManager.orderTextureIDs();
 		}
 	}
 	
-	public void addTexture (byte [] data, int id, int width, int height, GL4 gl4){
-		gl4.glBindTexture(GL4.GL_TEXTURE_2D, id);
-		gl4.glTexParameterf(GL.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_NEAREST);
-		gl4.glTexParameterf(GL.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_NEAREST);
-		gl4.glTexParameterf(GL.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
-		gl4.glTexParameterf(GL.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
+	public void addTexture (byte [] data, int id, int width, int height, GL4ES3 gl4es3){
+		gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D, id);
+		gl4es3.glTexParameterf(GL.GL_TEXTURE_2D, GL4ES3.GL_TEXTURE_MIN_FILTER, GL4ES3.GL_NEAREST);
+		gl4es3.glTexParameterf(GL.GL_TEXTURE_2D, GL4ES3.GL_TEXTURE_MAG_FILTER, GL4ES3.GL_NEAREST);
+		gl4es3.glTexParameterf(GL.GL_TEXTURE_2D, GL4ES3.GL_TEXTURE_WRAP_S, GL4ES3.GL_REPEAT);
+		gl4es3.glTexParameterf(GL.GL_TEXTURE_2D, GL4ES3.GL_TEXTURE_WRAP_T, GL4ES3.GL_REPEAT);
 		ByteBuffer buffer = GLBuffers.newDirectByteBuffer(data);
-		gl4.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
+		gl4es3.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
 	}
 	
 	public int [] addImageDim (int [] dims, BufferedImage image){
@@ -731,23 +713,23 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		return copy;
 	}
     
-	public int [] dynamicTextureInit (GL4 gl4){
+	public int [] dynamicTextureInit (GL4ES3 gl4es3){
 		int [] IDs = new int [7];
-		gl4.glGenTextures(1, IDs, 0);
-		gl4.glBindTexture(GL4.GL_TEXTURE_2D_ARRAY, IDs[0]);
-		gl4.glTexParameterf(GL4.GL_TEXTURE_2D_ARRAY, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_NEAREST);
-		gl4.glTexParameterf(GL4.GL_TEXTURE_2D_ARRAY, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_NEAREST);
-		gl4.glTexImage3D(GL4.GL_TEXTURE_2D_ARRAY, 0, GL4.GL_RGBA, DYNTEXTURESIZE, DYNTEXTURESIZE, 6, 0, GL4.GL_RGBA, GL4.GL_UNSIGNED_BYTE, null);
+		gl4es3.glGenTextures(1, IDs, 0);
+		gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D_ARRAY, IDs[0]);
+		gl4es3.glTexParameterf(GL4ES3.GL_TEXTURE_2D_ARRAY, GL4ES3.GL_TEXTURE_MIN_FILTER, GL4ES3.GL_NEAREST);
+		gl4es3.glTexParameterf(GL4ES3.GL_TEXTURE_2D_ARRAY, GL4ES3.GL_TEXTURE_MAG_FILTER, GL4ES3.GL_NEAREST);
+		gl4es3.glTexImage3D(GL4ES3.GL_TEXTURE_2D_ARRAY, 0, GL4ES3.GL_RGBA, DYNTEXTURESIZE, DYNTEXTURESIZE, 6, 0, GL4ES3.GL_RGBA, GL4ES3.GL_UNSIGNED_BYTE, null);
 
-		gl4.glGenFramebuffers(6, IDs, 1);
+		gl4es3.glGenFramebuffers(6, IDs, 1);
 		for (int i=0;i<6;i++){			
-			gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, IDs[i+1]);
-			gl4.glFramebufferTextureLayer(GL4.GL_FRAMEBUFFER, GL4.GL_COLOR_ATTACHMENT0, IDs[0], 0, i);
+			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, IDs[i+1]);
+			gl4es3.glFramebufferTextureLayer(GL4ES3.GL_FRAMEBUFFER, GL4ES3.GL_COLOR_ATTACHMENT0, IDs[0], 0, i);
 		}
-		gl4.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
-		gl4.glBindTexture(GL4.GL_TEXTURE_2D_ARRAY, 0);
+		gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, 0);
+		gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D_ARRAY, 0);
 		
-		if (gl4.glCheckFramebufferStatus(GL4.GL_FRAMEBUFFER) != GL4.GL_FRAMEBUFFER_COMPLETE) {
+		if (gl4es3.glCheckFramebufferStatus(GL4ES3.GL_FRAMEBUFFER) != GL4ES3.GL_FRAMEBUFFER_COMPLETE) {
 			System.out.println("FBO ERROR");
 		}
 		
@@ -761,7 +743,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	
 	public void initComponents(){
 		coms = new Component [1];
-		coms[0] = new Component(0,0,2f,0,0,0,1,1,true,ModelManager.ONEXONEXONE, dyntextureID,"Test");
+		coms[0] = new Component(0,0,2f,0,0,0,1,1,1,true,ModelManager.ONEXONEXONE, dyntextureID,"Test");
 	}
 	
 	int direction = 0;
