@@ -105,28 +105,51 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
     	(float) -1, (float) +1,
     	(float) +1, (float) -1};
 
-    private float[][] vertexData = new float[][] {    		
-		{(float) -1, (float) -1, (float) +1, (float) 0, (float) 0,
-		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0,
-		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1,
-		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1,
-		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1,
-		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0},
+    private float[][] vertexData = new float[][] {    	
+		{(float) -1, (float) -1, (float) +1, (float) 0, (float) 0, (float) 0,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 0,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1, (float) 0,
+		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1, (float) 0,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1, (float) 0,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 0,
 		
-		{(float) -1, (float) +1, (float) -1, (float) 0, (float) 0,
-		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0,
-		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1,
-		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1,
-		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1,
-		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0},
+		(float) -1, (float) -1, (float) -1, (float) 0, (float) 0, (float) 1,
+		(float) +1, (float) -1, (float) -1, (float) 1, (float) 0, (float) 1,
+		(float) -1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 1,
+		(float) +1, (float) +1, (float) -1, (float) 1, (float) 1, (float) 1,
+		(float) -1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 1,
+		(float) +1, (float) -1, (float) -1, (float) 1, (float) 0, (float) 1,
 		
-		{(float) +1, (float) -1, (float) -1, (float) 0, (float) 0,
-		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0,
-		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1,
-		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1,
-		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1,
-		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0},
-    };
+		(float) +1, (float) -1, (float) -1, (float) 0, (float) 0, (float) 2,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 2,
+		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 2,
+		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1, (float) 2,
+		(float) +1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 2,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 2,
+		
+		(float) -1, (float) -1, (float) -1, (float) 0, (float) 0, (float) 3,
+		(float) -1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 3,
+		(float) -1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 3,
+		(float) -1, (float) +1, (float) +1, (float) 1, (float) 1, (float) 3,
+		(float) -1, (float) +1, (float) -1, (float) 0, (float) 1, (float) 3,
+		(float) -1, (float) -1, (float) +1, (float) 1, (float) 0, (float) 3,
+		
+		(float) -1, (float) +1, (float) -1, (float) 0, (float) 0, (float) 4,
+		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0, (float) 4,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1, (float) 4,
+		(float) +1, (float) +1, (float) +1, (float) 1, (float) 1, (float) 4,
+		(float) -1, (float) +1, (float) +1, (float) 0, (float) 1, (float) 4,
+		(float) +1, (float) +1, (float) -1, (float) 1, (float) 0, (float) 4,
+		
+		(float) -1, (float) -1, (float) -1, (float) 0, (float) 0, (float) 5,
+		(float) +1, (float) -1, (float) -1, (float) 1, (float) 0, (float) 5,
+		(float) -1, (float) -1, (float) +1, (float) 0, (float) 1, (float) 5,
+		(float) +1, (float) -1, (float) +1, (float) 1, (float) 1, (float) 5,
+		(float) -1, (float) -1, (float) +1, (float) 0, (float) 1, (float) 5,
+		(float) +1, (float) -1, (float) -1, (float) 1, (float) 0, (float) 5},
+		};
+		
+	private int [] drawTypes = {GL4ES3.GL_TRIANGLES};
     
 	private short[] indexDataTextureRender = new short[textureRenderSquare.length/2];
 	private int [] VAOTR = new int [1];
@@ -149,7 +172,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		}
 	}
     
-    private int modelMatrixID, projMatrixID, rotationUVID, offSetsID, layerID;
+    private int modelMatrixID, projMatrixID;
     private int programScreen, programTextureSBWH, programTextureHBWS, programTextureSHWB;
     private final String SHADERS_ROOT = "/shaders";
     
@@ -163,10 +186,9 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
     private float[] projMatrix = new float[16];
     private float[] Ftranslations = new float[16];
 
-    long nanoNow, nanoBefore, nanoTime;
+    long nanoNow, nanoBefore;
     
     Component [] coms;
-    Component_Piece [] comPs;
     
     @Override
 	public void init(GLAutoDrawable drawable) {
@@ -181,10 +203,10 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		initVao(gl4es3);
 
 		for (int i=0;i<objects[0].length;i++){
-			ModelManager.addModel(new Model (objects[VAO][i], objects[VBO][i], objects[IBO][i], indexData[i].length), modelAlignmentX-vertexData[i][0], modelAlignmentY-vertexData[i][1]);
+			ModelManager.addModel(new Model (objects[VAO][i], objects[VBO][i], objects[IBO][i], indexData[i].length, drawTypes[i]), modelAlignmentX-vertexData[i][0], modelAlignmentY-vertexData[i][1]);
 		}
 		
-		square = new Model (VAOTR[0], VBOTR[0], IBOTR[0], indexDataTextureRender.length);
+		square = new Model (VAOTR[0], VBOTR[0], IBOTR[0], indexDataTextureRender.length, GL4ES3.GL_TRIANGLES);
 		
 		initTextures(gl4es3, "images");
 		
@@ -275,11 +297,11 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 				{
 					gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, objects[VBO][i]);
 					{
-						int stride = (3 + 2) * GLBuffers.SIZEOF_FLOAT;
+						int stride = (3 + 3) * GLBuffers.SIZEOF_FLOAT;
 						gl4es3.glEnableVertexAttribArray(POSITION);
 						gl4es3.glVertexAttribPointer(POSITION, 3, GL4ES3.GL_FLOAT, false, stride, 0 * GLBuffers.SIZEOF_FLOAT);
 						gl4es3.glEnableVertexAttribArray(COLOR);
-						gl4es3.glVertexAttribPointer(COLOR, 2, GL4ES3.GL_FLOAT, false, stride, 3 * GLBuffers.SIZEOF_FLOAT);
+						gl4es3.glVertexAttribPointer(COLOR, 3, GL4ES3.GL_FLOAT, false, stride, 3 * GLBuffers.SIZEOF_FLOAT);
 					}
 					gl4es3.glBindBuffer(GL4ES3.GL_ARRAY_BUFFER, 0);
 				}
@@ -352,9 +374,6 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
         
         projMatrixID = gl4es3.glGetUniformLocation(programScreen, "projMatrix");
         modelMatrixID = gl4es3.glGetUniformLocation(programScreen, "modelMatrix");
-        rotationUVID = gl4es3.glGetUniformLocation(programScreen, "rotationUV");
-        offSetsID = gl4es3.glGetUniformLocation(programScreen, "offSets");
-        layerID = gl4es3.glGetUniformLocation(programScreen, "layer");
         textureShaderID = gl4es3.glGetUniformLocation(programScreen, "textures");
 
         checkError(gl4es3, "initProgram");
@@ -386,24 +405,58 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
  
 	double angleSpeed = 1d/10000000d;
 	double color = 0;
-	int fps = 0;
-	long second = 0;
+	
+	double amountToMove = 0;
+	double amountToMoveX = 0;
+	double amountToMoveZ = 0;
+	double moveSpeed = 1d/100000000d;
+	double moveAdd = 1d/500000000d;
+	double mouseRotSpeed = 1d/40d;
+	double angle45 = Math.sin(Math.PI/4);
 
 	public void display(GLAutoDrawable drawable) {
 		nanoNow = System.nanoTime();
-		nanoTime = (nanoNow-nanoBefore);
-		fps++;
-		second = second+nanoTime;
-		if (second>=1000000000){
-			System.out.println(fps);
-			fps = 0;
-			second=0;
+		if (direction != 0) {
+			amountToMove = amountToMove + (nanoNow-nanoBefore)*moveAdd;
 		}
-		cam.update(nanoTime);
-		for (int i=0;i<coms.length;i++){
-			coms[i].update(nanoTime);
+		switch (direction){
+			case(-3):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;
+			case(3):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;		
+			case(2):
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;		
+			case(-2):
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove);
+			break;	
+			case(-1):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;
+			case(1):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;		
+			case(5):
+			amountToMoveX = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;		
+			case(-5):
+			amountToMoveX = ((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			amountToMoveZ = -((nanoNow-nanoBefore)*moveSpeed*amountToMove)*angle45;
+			break;
+			case(0):
+			amountToMoveX -= (nanoNow-nanoBefore)*moveSpeed*amountToMoveX*angle45;
+			amountToMoveZ -= (nanoNow-nanoBefore)*moveSpeed*amountToMoveZ*angle45;
 		}
-		color = color + (nanoTime)*angleSpeed;
+		cam.moveTranslation((float)(amountToMoveX), 0, (float) (amountToMoveZ));
+		cam.rotateY((float)(mouseRotSpeed * YMinc));
+		cam.rotateX((float)(mouseRotSpeed * XMinc));
+		amountToMove -= (nanoNow-nanoBefore)*moveSpeed*amountToMove;
+		color = color + (nanoNow-nanoBefore)*angleSpeed;
 		nanoBefore = nanoNow;
 	    
 		GL4ES3 gl4es3 = drawable.getGL().getGL4();
@@ -420,7 +473,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			{
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			checkError(gl4es3, "display");
 			
@@ -430,7 +483,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			{
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDSB], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform4fv(uniformIDs[SBwithH], 1, Colors.hueToRGB((float) (color/60d),1), 0);
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 
 		}
@@ -442,7 +495,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform1f(uniformIDs[HBwithS], 1);
 				gl4es3.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			
 			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[3]);
@@ -451,7 +504,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDHB], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform1f(uniformIDs[HBwithS], 0);
 				gl4es3.glUniform1f(uniformIDs[HueoffIDHB], (float) (color/60d));
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 
 		}
@@ -463,7 +516,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform1f(uniformIDs[SHwithB], 1);
 				gl4es3.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			
 			gl4es3.glBindFramebuffer(GL4ES3.GL_FRAMEBUFFER, dynfboIDs[5]);
@@ -472,7 +525,7 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 				gl4es3.glUniform4fv(uniformIDs[offSetsIDSH], 1, new float [] {0,1,0,1}, 0);
 				gl4es3.glUniform1f(uniformIDs[SHwithB], 0);
 				gl4es3.glUniform1f(uniformIDs[HueoffIDSH], (float) (color/60d));
-				gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
+				gl4es3.glDrawElements(square.getDrawType(), square.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 			}
 			
 		}
@@ -483,24 +536,19 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		
 		{
 			for (int i = 0; i < coms.length; i++) {
-				if (coms[i].draw) {
-					gl4es3.glBindVertexArray(coms[i].model.getVAO());
-					{
-						gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D_ARRAY, coms[i].textureID);
-						gl4es3.glUniform1i(textureShaderID, 0);
+				gl4es3.glBindVertexArray(coms[i].model.getVAO());
+				{
+					gl4es3.glBindTexture(GL4ES3.GL_TEXTURE_2D_ARRAY,coms[i].textureID);
+					gl4es3.glUniform1i(textureShaderID, 0);
+					
+					finalS = FloatUtil.multMatrix(coms[i].finalRotation, coms[i].scaleMatrix, Ftranslations);
+					Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, finalS, Ftranslations);
+					finalM = FloatUtil.multMatrix(cam.finalRotation, cam.translation, finalM);
+					modelToClip = FloatUtil.multMatrix(finalM, Ftranslations, modelToClip);
+					gl4es3.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
+					gl4es3.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
 
-						finalS = FloatUtil.multMatrix(coms[i].finalRotation, coms[i].scaleMatrix, Ftranslations);
-						Ftranslations = FloatUtil.multMatrix(coms[i].positionMatrix, finalS, Ftranslations);
-						finalM = FloatUtil.multMatrix(cam.finalRotation, cam.translation, finalM);
-						modelToClip = FloatUtil.multMatrix(finalM, Ftranslations, modelToClip);
-						gl4es3.glUniformMatrix4fv(modelMatrixID, 1, false, modelToClip, 0);
-						gl4es3.glUniformMatrix4fv(projMatrixID, 1, false, projMatrix, 0);
-						gl4es3.glUniformMatrix2fv(rotationUVID, 1, false, coms[i].texUV, 0);
-						gl4es3.glUniform4fv(offSetsID, 1, coms[i].texUVP, 0);
-						gl4es3.glUniform1i(layerID, coms[i].layer);
-
-						gl4es3.glDrawElements(GL4ES3.GL_TRIANGLES, coms[i].model.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
-					}
+					gl4es3.glDrawElements(coms[i].model.getDrawType(), coms[i].model.getIndexLength(), GL4ES3.GL_UNSIGNED_SHORT, 0);
 				}
 			}
 			gl4es3.glBindVertexArray(0);
@@ -694,64 +742,24 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 	
 	public void initComponents(){
-		coms = new Component [24];
-		comPs = new Component_Piece [24];
-		coms[0] = Component_Piece.get_Component_Piece_Z(0,0,2f,0,0,0,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,0,"Test", new float[] {1,0,0,1});	
-		coms[1] = Component_Piece.get_Component_Piece_Z(0.5f,0,2f,0,0,Math.PI/4,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,0,"Test", new float[] {0,1,-1,0});	
-		coms[2] = Component_Piece.get_Component_Piece_Z(0.5f,0.5f,2f,0,0,Math.PI/2,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,0,"Test", new float[] {-1,0,0,-1});	
-		coms[3] = Component_Piece.get_Component_Piece_Z(0,0.5f,2f,0,0,3*Math.PI/4,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,0,"Test", new float[] {0,-1,1,0});
-
-		coms[4] = Component_Piece.get_Component_Piece_Z(0,0,3f,0,0,0,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,1,"Test", new float[] {1,0,0,1});	
-		coms[5] = Component_Piece.get_Component_Piece_Z(0.5f,0,3f,0,0,Math.PI/4,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,1,"Test", new float[] {0,1,-1,0});	
-		coms[6] = Component_Piece.get_Component_Piece_Z(0.5f,0.5f,3f,0,0,Math.PI/2,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,1,"Test", new float[] {-1,0,0,-1});	
-		coms[7] = Component_Piece.get_Component_Piece_Z(0,0.5f,3f,0,0,3*Math.PI/4,0.5f,0.5f,1,true,ModelManager.ONEXONEF, dyntextureID,1,"Test", new float[] {0,-1,1,0});
-		
-		coms[8] = Component_Piece.get_Component_Piece_Y(0,0.25f,2.25f,0,0,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,4,"Test", new float[] {1,0,0,1});	
-		coms[9] = Component_Piece.get_Component_Piece_Y(0.5f,0.25f,2.25f,0,Math.PI/4,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,4,"Test", new float[] {0,1,-1,0});	
-		coms[10] = Component_Piece.get_Component_Piece_Y(0.5f,0.25f,1.75f,0,Math.PI/2,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,4,"Test", new float[] {-1,0,0,-1});	
-		coms[11] = Component_Piece.get_Component_Piece_Y(0,0.25f,1.75f,0,3*Math.PI/4,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,4,"Test", new float[] {0,-1,1,0});
-		
-		coms[12] = Component_Piece.get_Component_Piece_Y(0,-.75f,2.25f,0,0,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,5,"Test", new float[] {1,0,0,1});	
-		coms[13] = Component_Piece.get_Component_Piece_Y(0.5f,-.75f,2.25f,0,Math.PI/4,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,5,"Test", new float[] {0,1,-1,0});	
-		coms[14] = Component_Piece.get_Component_Piece_Y(0.5f,-.75f,1.75f,0,Math.PI/2,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,5,"Test", new float[] {-1,0,0,-1});	
-		coms[15] = Component_Piece.get_Component_Piece_Y(0,-.75f,1.75f,0,3*Math.PI/4,0,0.5f,1,0.5f,true,ModelManager.ONEXONET, dyntextureID,5,"Test", new float[] {0,-1,1,0});
-		
-		coms[16] = Component_Piece.get_Component_Piece_X(.25f,0.0f,2.25f,0,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,2,"Test", new float[] {1,0,0,1});	
-		coms[17] = Component_Piece.get_Component_Piece_X(.25f,0.5f,2.25f,Math.PI/4,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,2,"Test", new float[] {0,-1,1,0});	
-		coms[18] = Component_Piece.get_Component_Piece_X(.25f,0.5f,1.75f,Math.PI/2,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,2,"Test", new float[] {-1,0,0,-1});	
-		coms[19] = Component_Piece.get_Component_Piece_X(.25f,0.0f,1.75f,3*Math.PI/4,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,2,"Test", new float[] {0,1,-1,0});
-		
-		coms[20] = Component_Piece.get_Component_Piece_X(-.75f,0.0f,2.25f,0,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,3,"Test", new float[] {1,0,0,1});	
-		coms[21] = Component_Piece.get_Component_Piece_X(-.75f,0.5f,2.25f,Math.PI/4,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,3,"Test", new float[] {0,-1,1,0});	
-		coms[22] = Component_Piece.get_Component_Piece_X(-.75f,0.5f,1.75f,Math.PI/2,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,3,"Test", new float[] {-1,0,0,-1});	
-		coms[23] = Component_Piece.get_Component_Piece_X(-.75f,0.0f,1.75f,3*Math.PI/4,0,0,1,0.5f,0.5f,true,ModelManager.ONEXONER, dyntextureID,3,"Test", new float[] {0,1,-1,0});
-		
-		comPs[0] = (Component_Piece) coms[0];
-		comPs[1] = (Component_Piece) coms[1];
-		comPs[2] = (Component_Piece) coms[2];
-		comPs[3] = (Component_Piece) coms[3];
-		comPs[4] = (Component_Piece) coms[4];
-		comPs[5] = (Component_Piece) coms[5];
-		comPs[6] = (Component_Piece) coms[6];
-		comPs[7] = (Component_Piece) coms[7];
-		comPs[8] = (Component_Piece) coms[8];
-		comPs[9] = (Component_Piece) coms[9];
-		comPs[10] = (Component_Piece) coms[10];
-		comPs[11] = (Component_Piece) coms[11];
-		comPs[12] = (Component_Piece) coms[12];
-		comPs[13] = (Component_Piece) coms[13];
-		comPs[14] = (Component_Piece) coms[14];
-		comPs[15] = (Component_Piece) coms[15];
-		comPs[16] = (Component_Piece) coms[16];
-		comPs[17] = (Component_Piece) coms[17];
-		comPs[18] = (Component_Piece) coms[18];
-		comPs[19] = (Component_Piece) coms[19];
-		comPs[20] = (Component_Piece) coms[20];
-		comPs[21] = (Component_Piece) coms[21];
-		comPs[22] = (Component_Piece) coms[22];
-		comPs[23] = (Component_Piece) coms[23];
+		coms = new Component [1];
+		coms[0] = new Component(0,0,2f,0,0,0,1,1,1,true,ModelManager.ONEXONEXONE, dyntextureID,"Test");
 	}
 	
+	int direction = 0;
+	//Right, Left, Up, Down
+	int [] directions = {-3,3,2,-2};
+	boolean [] directionDown = {false,false,false,false};
+	
+	public void keyState (int key, boolean down){
+		if (down&&directionDown[key]==false){
+			direction += directions[key];
+			directionDown [key] = true;
+		} else if (down==false&&directionDown[key]) {
+			direction -= directions[key];			
+			directionDown [key] = false;
+		}
+	}
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -759,13 +767,13 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			animator.stop();
 			glWindow.destroy();
 		} else if (e.getKeyCode() == KeyEvent.VK_A){
-			cam.keyState(0, true);
+			keyState(0, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_D){
-			cam.keyState(1, true);
+			keyState(1, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_S){
-			cam.keyState(3, true);
+			keyState(3, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_W){
-			cam.keyState(2, true);
+			keyState(2, true);
 		} else if (e.getKeyCode() == KeyEvent.VK_1){
 			cam.rotateX(Math.PI/12);
 		} else if (e.getKeyCode() == KeyEvent.VK_2){
@@ -782,10 +790,6 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 			angleSpeed = angleSpeed + 1d/50000000d;
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN){
 			angleSpeed = angleSpeed - 1d/50000000d;
-		} else if (e.getKeyCode() == KeyEvent.VK_G){
-			for (int i=0;i<comPs.length;i++){
-				comPs[i].change = true;
-			}
 		}
 	}
 	
@@ -793,13 +797,13 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	public void keyReleased(KeyEvent e) {
 		if (e.isAutoRepeat() == false) {
 			if (e.getKeyCode() == KeyEvent.VK_A) {
-				cam.keyState(0, false);
+				keyState(0, false);
 			} else if (e.getKeyCode() == KeyEvent.VK_D) {
-				cam.keyState(1, false);
+				keyState(1, false);
 			} else if (e.getKeyCode() == KeyEvent.VK_S) {
-				cam.keyState(3, false);
+				keyState(3, false);
 			} else if (e.getKeyCode() == KeyEvent.VK_W) {
-				cam.keyState(2, false);
+				keyState(2, false);
 			}
 		}
 	}
@@ -825,12 +829,41 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 	}
 
 	double mouseX, mouseY;
+	double XMinc, YMinc;
+	double N, P;
+	{
+		N = -1;
+		P = (1050-2d)/1050;
+	}
+	boolean setXM = false;
 	
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 		mouseX = ((double) (arg0.getX())/(double) (swidth))*2 - 1f;
 		mouseY = ((double) (arg0.getY())/(double) (sheight))*2 - 1f;
-		cam.mouseMoved(mouseX, mouseY);
+		if (mouseX <= N){
+			YMinc = 1;
+			XMinc = mouseY;
+			setXM = true;
+		} else if (mouseX >= P){	
+			YMinc = -1;
+			XMinc = mouseY;
+			setXM = true;
+		} else {
+			YMinc = 0;
+		}
+		if (mouseY <= N){
+			XMinc = -1;
+			YMinc = -mouseX;
+		} else if (mouseY >= P){	
+			XMinc = 1;
+			YMinc = -mouseX;
+		} else {
+			if (setXM==false){
+				XMinc = 0;
+			}
+		}
+		setXM = false;
 	}
 
 	@Override

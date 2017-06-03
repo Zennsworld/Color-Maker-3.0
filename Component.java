@@ -14,8 +14,6 @@ public class Component {
 	float [] rotationY = new float[16];
 	float [] rotationZ = new float[16];
 	float [] finalRotation = new float[16];
-	float [] texUV = {1,0,0,1};
-	float [] texUVP = {0,1,0,1};
 	float width;
 	float height;
 	float depth;
@@ -27,14 +25,12 @@ public class Component {
 	int modelID;
 	Model model;
 	int textureID;
-	int layer;
 	String type;
-	boolean draw = true;
 	
 	boolean pressedAndHeld = false;
 	
 	//texture ID needs to be the GL ID, not the array ID (for names pass in true)
-	public Component (float x, float y, float z, double xr, double yr, double zr, float width, float height, float depth, boolean events, int modelID, int textureID, int layer, String type){
+	public Component (float x, float y, float z, double xr, double yr, double zr, float width, float height, float depth, boolean events, int modelID, int textureID, String type){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -52,7 +48,6 @@ public class Component {
 		this.modelID = modelID;
 		model = ModelManager.getModel(modelID);
 		this.textureID = textureID;
-		this.layer = layer;
 		this.type = type;
 		updateLocalScaleMatrix();
 		updateLocalPositionMatrix();
@@ -97,7 +92,7 @@ public class Component {
 	
 	public void rotateZ (double zinc){
 		zr+=zinc;
-		float [] rotationZ = {(float) Math.cos(zr),(float) Math.sin(zr),0,0,(float) -Math.sin(zr),(float) Math.cos(zr),0,0,0,0,1,0,0,0,0,1};
+		float [] rotationZ = {1,0,0,0,0,(float) Math.cos(zr),(float) Math.sin(zr),0,0,(float) -Math.sin(zr),(float) Math.cos(zr),0,0,0,0,1};
 		this.rotationZ = rotationZ;
 	}
 	

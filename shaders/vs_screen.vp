@@ -1,15 +1,12 @@
 #version 410
 
 in vec3 position;
-in vec2 vertexUV;
+in vec3 vertexUV;
 layout(location = 0) out vec3 fragmentUV;
 uniform mat4 projMatrix;
 uniform mat4 modelMatrix;
-uniform mat2 rotationUV;
-uniform vec4 offSets;
-uniform int layer;
 
 void main() {
     gl_Position = projMatrix * modelMatrix * vec4(position, 1);
-    fragmentUV = vec3 ((rotationUV * (vec2 (offSets.x + vertexUV.x*offSets.y, offSets.z + vertexUV.y*offSets.w))*2-1)/2+0.5, layer);
+    fragmentUV = vertexUV;
 }

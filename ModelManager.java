@@ -4,9 +4,7 @@ import java.io.InputStreamReader;
 
 public class ModelManager {
 	
-	public final static int ONEXONEF = 0;
-	public final static int ONEXONET = 1;
-	public final static int ONEXONER = 2;
+	public final static int ONEXONEXONE = 0;
 	
 	static Model [] models = new Model[0];
 	static float [][] lineupoffsets = new float [0][2]; 
