@@ -783,8 +783,14 @@ public class Frame implements GLEventListener, KeyListener, MouseListener {
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN){
 			angleSpeed = angleSpeed - 1d/50000000d;
 		} else if (e.getKeyCode() == KeyEvent.VK_G){
-			for (int i=0;i<comPs.length;i++){
-				comPs[i].change = true;
+			if (comPs[0].change){				
+				for (int i=0;i<comPs.length;i++){
+					comPs[i].change = false;
+				}
+			} else {
+				for (int i=0;i<comPs.length;i++){
+					comPs[i].change = true;
+				}				
 			}
 		}
 	}
